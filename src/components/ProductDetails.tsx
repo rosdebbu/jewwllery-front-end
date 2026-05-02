@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Star, ChevronLeft, Minus, Plus } from 'lucide-react';
 import gsap from 'gsap';
+import api from '../api/axios';
 
 interface Product {
-  id: number;
+  id: number | string;
   name: string;
   category: string;
-  price: string;
+  price: number | string;
   image: string;
   description?: string;
 }
@@ -133,10 +134,22 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onBack }) => {
         </div>
 
         {/* Add to Cart Button */}
-        <button className="w-full h-14 rounded-2xl bg-[#E6D0AC] text-[#5C4524] flex items-center justify-center gap-4 hover:bg-white transition-all active:scale-[0.98] group">
+        <button 
+          onClick={async () => {
+            try {
+              await api.post('/cart', { productId: product.id, quantity });
+              onCartClick();
+            } catch (error) {
+              console.error('Failed to add to cart:', error);
+              // Fallback if not logged in or server down
+              onCartClick();
+            }
+          }}
+          className="w-full h-14 rounded-2xl bg-[#E6D0AC] text-[#5C4524] flex items-center justify-center gap-4 hover:bg-white transition-all active:scale-[0.98] group"
+        >
           <span className="font-serif text-lg font-medium">Add To Cart</span>
           <div className="w-px h-6 bg-[#5C4524]/20 group-hover:bg-[#5C4524]/40 transition-colors"></div>
-          <span className="font-sans text-lg font-semibold">{product.price}</span>
+          <span className="font-sans text-lg font-semibold">₹ {typeof product.price === 'number' ? product.price.toLocaleString('en-IN') : product.price}</span>
         </button>
         
         {/* Bottom Home Indicator area spacing */}

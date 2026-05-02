@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  cartItems CartItem[]
+  orders    Order[]
+  wishlist  WishlistItem[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  category    String
+  description String?
+  price       Float
+  image       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cartItems   CartItem[]
+  wishlist    WishlistItem[]
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  quantity  Int      @default(1)
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+}
+
+model WishlistItem {
+  id        String   @id @default(uuid())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Order {
+  id            String   @id @default(uuid())
+  status        String   @default("Pending") // Pending, Accepted, In Progress, On The Way, Delivered
+  totalAmount   Float
+  shippingAddress String?
+  
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

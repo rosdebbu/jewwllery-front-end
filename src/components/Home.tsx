@@ -1,26 +1,24 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { Search, SlidersHorizontal, Home as HomeIcon, ShoppingBag, MessageSquare, User, HelpCircle, Grid2x2 } from 'lucide-react';
+import axios from 'axios';
 
 const categories = ['Rings', 'Bracelet', 'Earrings', 'Necklace', 'Rings'];
 
-const popularItems = [
-  { id: 1, name: 'Diamond Earrings', category: 'Earrings', price: '₹ 108126', image: '/assets/earrings.png' },
-  { id: 2, name: 'Diamond Ring', category: 'Rings', price: '₹ 108126', image: '/assets/ring.png' },
-  { id: 3, name: 'Jewellery Set', category: 'Necklaces', price: '₹ 108126', image: '/assets/necklace.png' },
-];
-
 const wishlistItems = [
-  { id: 1, name: 'Diamond Earrings', category: 'Earrings', price: '₹ 108126', image: '/assets/earrings.png' },
-  { id: 2, name: 'Diamond Earrings', category: 'Earrings', price: '₹ 108126', image: '/assets/necklace.png' },
+  { id: 1, name: 'Diamond Earrings', category: 'Earrings', price: 108126, image: '/assets/earrings.png' },
+  { id: 2, name: 'Diamond Necklace', category: 'Necklace', price: 150000, image: '/assets/necklace.png' },
 ];
 
 interface HomeProps {
   onProductClick: (product: any) => void;
+  onCartClick: () => void;
+  onProfileClick: () => void;
 }
 
-const Home: React.FC<HomeProps> = ({ onProductClick }) => {
+const Home: React.FC<HomeProps> = ({ onProductClick, onCartClick, onProfileClick }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [popularItems, setPopularItems] = useState<any[]>([]);
 
   useEffect(() => {
     // Simple fade in animation for home screen
@@ -28,6 +26,17 @@ const Home: React.FC<HomeProps> = ({ onProductClick }) => {
       { opacity: 0 },
       { opacity: 1, duration: 1, ease: "power2.out" }
     );
+
+    // Fetch products
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/products');
+        setPopularItems(response.data);
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+      }
+    };
+    fetchProducts();
   }, []);
 
   return (
@@ -110,7 +119,7 @@ const Home: React.FC<HomeProps> = ({ onProductClick }) => {
                 <h4 className="font-serif text-sm md:text-base font-medium truncate">{item.name}</h4>
                 <p className="text-xs text-champagne/50 font-sans mb-3">{item.category}</p>
                 <div className="flex justify-between items-center mt-auto">
-                  <span className="font-sans text-sm md:text-base font-medium">{item.price}</span>
+                  <span className="font-sans text-sm md:text-base font-medium">₹ {item.price.toLocaleString('en-IN')}</span>
                   <button className="bg-[#E6D0AC] text-[#5C4524] p-1.5 rounded-lg hover:bg-white transition-colors">
                     <ShoppingBag size={14} />
                   </button>
@@ -136,7 +145,7 @@ const Home: React.FC<HomeProps> = ({ onProductClick }) => {
                 <div className="flex-1 min-w-0">
                   <h4 className="font-serif text-sm font-medium truncate">{item.name}</h4>
                   <p className="text-xs text-champagne/50 font-sans mb-1">{item.category}</p>
-                  <span className="font-sans text-xs font-medium">{item.price}</span>
+                  <span className="font-sans text-xs font-medium">₹ {item.price.toLocaleString('en-IN')}</span>
                 </div>
                 <button className="bg-[#E6D0AC] text-[#5C4524] p-1.5 rounded-lg hover:bg-white transition-colors flex-shrink-0">
                   <ShoppingBag size={14} />
@@ -153,9 +162,9 @@ const Home: React.FC<HomeProps> = ({ onProductClick }) => {
         <div className="w-full max-w-sm bg-gradient-to-t from-black/80 via-black/60 to-transparent absolute bottom-0 h-32 -z-10 pointer-events-none"></div>
         <nav className="w-full max-w-md bg-[#2A2A2A]/90 backdrop-blur-xl border border-white/10 rounded-full px-6 py-4 flex justify-between items-center shadow-2xl pointer-events-auto">
           <NavItem icon={<HomeIcon size={24} />} label="Home" active />
-          <NavItem icon={<ShoppingBag size={24} />} label="Shop" />
+          <NavItem icon={<ShoppingBag size={24} />} label="Shop" onClick={onCartClick} />
           <NavItem icon={<MessageSquare size={24} />} label="Chat" />
-          <NavItem icon={<User size={24} />} label="Profile" />
+          <NavItem icon={<User size={24} />} label="Profile" onClick={onProfileClick} />
           <NavItem icon={<HelpCircle size={24} />} label="Help" />
         </nav>
       </div>
@@ -163,8 +172,8 @@ const Home: React.FC<HomeProps> = ({ onProductClick }) => {
   );
 };
 
-const NavItem = ({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) => (
-  <button className={`flex flex-col items-center gap-1 transition-colors ${active ? 'text-[#E6D0AC]' : 'text-champagne/50 hover:text-champagne/80'}`}>
+const NavItem = ({ icon, label, active = false, onClick }: { icon: React.ReactNode, label: string, active?: boolean, onClick?: () => void }) => (
+  <button onClick={onClick} className={`flex flex-col items-center gap-1 transition-colors ${active ? 'text-[#E6D0AC]' : 'text-champagne/50 hover:text-champagne/80'}`}>
     {icon}
     <span className="text-[10px] font-serif font-medium tracking-wide">{label}</span>
   </button>

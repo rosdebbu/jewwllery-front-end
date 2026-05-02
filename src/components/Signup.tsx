@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import { EyeOff } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { EyeOff, Eye } from 'lucide-react';
 import gsap from 'gsap';
+import axios from 'axios';
 
 interface SignupProps {
   onLoginClick: () => void;
@@ -8,6 +9,15 @@ interface SignupProps {
 }
 
 const Signup: React.FC<SignupProps> = ({ onLoginClick, onSignup }) => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const elementsRef = useRef<HTMLDivElement[]>([]);
 
@@ -17,13 +27,39 @@ const Signup: React.FC<SignupProps> = ({ onLoginClick, onSignup }) => {
     }
   };
 
+  const handleSignupSubmit = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/register', {
+        name: `${firstName} ${lastName}`,
+        email,
+        password
+      });
+
+      // Save token
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+
+      onSignup();
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Signup failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-    // Initial state
     gsap.set(elementsRef.current, { opacity: 0, y: 30 });
 
-    // Stagger in elements
     tl.to(elementsRef.current, {
       opacity: 1,
       y: 0,
@@ -64,55 +100,71 @@ const Signup: React.FC<SignupProps> = ({ onLoginClick, onSignup }) => {
         </div>
 
         {/* Form Fields */}
-        <div ref={addToRefs} className="flex flex-col gap-4 mb-8">
-          <div className="w-full bg-white/10 border border-[#E5D1B9]/20 rounded-xl px-4 py-4 backdrop-blur-md transition-all hover:border-[#E5D1B9]/40 focus-within:border-[#E5D1B9] focus-within:bg-white/15">
+        <div ref={addToRefs} className="flex flex-col gap-4 mb-4">
+          <div className="w-full bg-white/10 border border-[#E5D1B9]/20 rounded-xl px-4 py-4 backdrop-blur-md transition-all focus-within:border-[#E5D1B9] focus-within:bg-white/15">
             <input 
               type="text" 
               placeholder="First Name" 
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               className="w-full bg-transparent text-champagne placeholder-champagne/50 outline-none font-sans text-lg"
             />
           </div>
 
-          <div className="w-full bg-white/10 border border-[#E5D1B9]/20 rounded-xl px-4 py-4 backdrop-blur-md transition-all hover:border-[#E5D1B9]/40 focus-within:border-[#E5D1B9] focus-within:bg-white/15">
+          <div className="w-full bg-white/10 border border-[#E5D1B9]/20 rounded-xl px-4 py-4 backdrop-blur-md transition-all focus-within:border-[#E5D1B9] focus-within:bg-white/15">
             <input 
               type="text" 
               placeholder="Last Name" 
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               className="w-full bg-transparent text-champagne placeholder-champagne/50 outline-none font-sans text-lg"
             />
           </div>
 
-          <div className="w-full bg-white/10 border border-[#E5D1B9]/20 rounded-xl px-4 py-4 backdrop-blur-md transition-all hover:border-[#E5D1B9]/40 focus-within:border-[#E5D1B9] focus-within:bg-white/15">
+          <div className="w-full bg-white/10 border border-[#E5D1B9]/20 rounded-xl px-4 py-4 backdrop-blur-md transition-all focus-within:border-[#E5D1B9] focus-within:bg-white/15">
             <input 
               type="email" 
               placeholder="Email Address" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-transparent text-champagne placeholder-champagne/50 outline-none font-sans text-lg"
             />
           </div>
 
-          <div className="w-full bg-white/10 border border-[#E5D1B9]/20 rounded-xl px-4 py-4 backdrop-blur-md transition-all hover:border-[#E5D1B9]/40 focus-within:border-[#E5D1B9] focus-within:bg-white/15">
+          <div className="w-full bg-white/10 border border-[#E5D1B9]/20 rounded-xl px-4 py-4 backdrop-blur-md flex items-center transition-all focus-within:border-[#E5D1B9] focus-within:bg-white/15">
             <input 
-              type="password" 
+              type={showPassword ? "text" : "password"} 
               placeholder="Password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-transparent text-champagne placeholder-champagne/50 outline-none font-sans text-lg"
             />
           </div>
 
-          <div className="w-full bg-white/10 border border-[#E5D1B9]/20 rounded-xl px-4 py-4 backdrop-blur-md flex items-center transition-all hover:border-[#E5D1B9]/40 focus-within:border-[#E5D1B9] focus-within:bg-white/15">
+          <div className="w-full bg-white/10 border border-[#E5D1B9]/20 rounded-xl px-4 py-4 backdrop-blur-md flex items-center transition-all focus-within:border-[#E5D1B9] focus-within:bg-white/15">
             <input 
-              type="password" 
+              type={showPassword ? "text" : "password"} 
               placeholder="Confirm Password" 
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full bg-transparent text-champagne placeholder-champagne/50 outline-none font-sans text-lg"
             />
-            <button className="text-champagne/50 hover:text-champagne transition-colors ml-2">
-              <EyeOff size={20} />
+            <button onClick={() => setShowPassword(!showPassword)} className="text-champagne/50 hover:text-champagne transition-colors ml-2">
+              {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
             </button>
           </div>
         </div>
 
+        {error && <p className="text-red-400 text-sm text-center mb-4">{error}</p>}
+
         {/* Continue Button */}
         <div ref={addToRefs}>
-          <button onClick={onSignup} className="w-full py-4 rounded-xl bg-[#E6D0AC] text-[#5C4524] font-serif text-xl tracking-wider hover:bg-white transition-colors duration-300 active:scale-[0.98] mb-8">
-            Continue
+          <button 
+            onClick={handleSignupSubmit} 
+            disabled={loading}
+            className="w-full py-4 rounded-xl bg-[#E6D0AC] text-[#5C4524] font-serif text-xl tracking-wider hover:bg-white transition-colors duration-300 active:scale-[0.98] mb-8 disabled:opacity-70"
+          >
+            {loading ? 'Creating...' : 'Continue'}
           </button>
         </div>
 

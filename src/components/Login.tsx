@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import { EyeOff } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { EyeOff, Eye } from 'lucide-react';
 import gsap from 'gsap';
+import axios from 'axios';
 
 interface LoginProps {
   onSignupClick: () => void;
@@ -8,8 +9,37 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ onSignupClick, onLogin }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const elementsRef = useRef<HTMLDivElement[]>([]);
+
+  const handleLoginSubmit = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        email,
+        password
+      });
+      
+      // Save token
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      
+      onLogin(); // Navigate to Home
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const addToRefs = (el: HTMLDivElement | null) => {
     if (el && !elementsRef.current.includes(el)) {
@@ -64,31 +94,37 @@ const Login: React.FC<LoginProps> = ({ onSignupClick, onLogin }) => {
         </div>
 
         {/* Form Fields */}
-        <div ref={addToRefs} className="flex flex-col gap-4 mb-8">
+        <div ref={addToRefs} className="flex flex-col gap-4 mb-4">
           <div className="w-full bg-white/10 border border-white/5 rounded-xl px-4 py-4 backdrop-blur-md transition-all focus-within:border-gold-light/50 focus-within:bg-white/15">
             <input 
               type="email" 
               placeholder="Email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-transparent text-champagne placeholder-champagne/50 outline-none font-sans text-lg"
             />
           </div>
 
           <div className="w-full bg-white/10 border border-white/5 rounded-xl px-4 py-4 backdrop-blur-md flex items-center transition-all focus-within:border-gold-light/50 focus-within:bg-white/15">
             <input 
-              type="password" 
+              type={showPassword ? "text" : "password"} 
               placeholder="Password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-transparent text-champagne placeholder-champagne/50 outline-none font-sans text-lg"
             />
-            <button className="text-champagne/50 hover:text-champagne transition-colors">
-              <EyeOff size={20} />
+            <button onClick={() => setShowPassword(!showPassword)} className="text-champagne/50 hover:text-champagne transition-colors">
+              {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
             </button>
           </div>
         </div>
 
+        {error && <p className="text-red-400 text-sm text-center mb-4">{error}</p>}
+
         {/* Login Button */}
         <div ref={addToRefs}>
-          <button onClick={onLogin} className="w-full py-4 rounded-xl bg-[#E6D0AC] text-[#5C4524] font-serif text-xl tracking-wider hover:bg-white transition-colors duration-300 active:scale-[0.98] mb-8">
-            Login
+          <button onClick={handleLoginSubmit} disabled={loading} className="w-full py-4 rounded-xl bg-[#E6D0AC] text-[#5C4524] font-serif text-xl tracking-wider hover:bg-white transition-colors duration-300 active:scale-[0.98] mb-8 disabled:opacity-70">
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </div>
 
