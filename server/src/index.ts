@@ -76,6 +76,63 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+import { OAuth2Client } from 'google-auth-library';
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || '334978160494-aicrlo8m07kdpejtv420e79ddfp1qrvu.apps.googleusercontent.com');
+
+app.post('/api/auth/google', async (req, res) => {
+  try {
+    const { access_token } = req.body;
+    
+    if (!access_token) {
+      return res.status(400).json({ error: 'Access token is required' });
+    }
+
+    // Fetch user info using the access_token
+    const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+
+    if (!userInfoResponse.ok) {
+      return res.status(400).json({ error: 'Invalid Google token' });
+    }
+
+    const payload = await userInfoResponse.json();
+    
+    if (!payload || !payload.email) {
+      return res.status(400).json({ error: 'Failed to retrieve email from Google' });
+    }
+
+    const email = payload.email;
+    const name = payload.name || 'Google User';
+
+    // Check if user exists
+    let user = await prisma.user.findUnique({ where: { email } });
+    
+    if (!user) {
+      // Create user if they don't exist
+      const salt = await bcrypt.genSalt(10);
+      const randomPassword = Math.random().toString(36).slice(-8); // Random placeholder password
+      const hashedPassword = await bcrypt.hash(randomPassword, salt);
+      
+      user = await prisma.user.create({
+        data: {
+          email,
+          name,
+          password: hashedPassword, // Dummy password for Google users
+        }
+      });
+    }
+
+    // Generate JWT
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+    
+    res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
+  } catch (error) {
+    console.error('Google Auth Error:', error);
+    res.status(500).json({ error: 'Server error during Google Authentication' });
+  }
+});
+
 // --- Product Routes ---
 app.get('/api/products', async (req, res) => {
   try {
@@ -160,7 +217,7 @@ app.post('/api/cart', authenticateToken, async (req: AuthRequest, res) => {
 app.put('/api/cart/:id', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const userId = req.user!.userId;
-    const cartItemId = req.params.id;
+    const cartItemId = req.params.id as string;
     const { quantity } = req.body;
 
     const item = await prisma.cartItem.findUnique({ where: { id: cartItemId } });
@@ -183,7 +240,7 @@ app.put('/api/cart/:id', authenticateToken, async (req: AuthRequest, res) => {
 app.delete('/api/cart/:id', authenticateToken, async (req: AuthRequest, res) => {
   try {
     const userId = req.user!.userId;
-    const cartItemId = req.params.id;
+    const cartItemId = req.params.id as string;
 
     const item = await prisma.cartItem.findUnique({ where: { id: cartItemId } });
     if (!item || item.userId !== userId) {
