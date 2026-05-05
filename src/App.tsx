@@ -20,9 +20,14 @@ import DesktopHome from './components/DesktopHome';
 import DesktopPage from './components/DesktopPage';
 import DesktopShop from './components/DesktopShop';
 import DesktopProductDetails from './components/DesktopProductDetails';
+import DesktopCheckout from './components/DesktopCheckout';
+import DesktopOrderDetails from './components/DesktopOrderDetails';
+import DesktopBlog from './components/DesktopBlog';
+import DesktopContactUs from './components/DesktopContactUs';
+import MyOrders from './components/MyOrders';
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState<'splash' | 'onboarding' | 'login' | 'signup' | 'home' | 'page' | 'product-details' | 'cart' | 'checkout-address' | 'order-details' | 'profile' | 'wishlist' | 'map-location' | 'offers' | 'contact-us' | 'case-study' | 'shop' | 'blog'>('splash');
+  const [currentScreen, setCurrentScreen] = useState<'splash' | 'onboarding' | 'login' | 'signup' | 'home' | 'page' | 'product-details' | 'cart' | 'checkout-address' | 'desktop-checkout' | 'order-details' | 'profile' | 'wishlist' | 'map-location' | 'offers' | 'contact-us' | 'chat' | 'case-study' | 'shop' | 'blog' | 'my-orders'>('splash');
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -40,11 +45,11 @@ function App() {
   };
 
   // Screens that should show the desktop nav
-  const authenticatedScreens = ['home', 'page', 'product-details', 'cart', 'checkout-address', 'order-details', 'profile', 'wishlist', 'offers', 'contact-us', 'chat', 'shop', 'blog'];
+  const authenticatedScreens = ['home', 'page', 'product-details', 'cart', 'checkout-address', 'desktop-checkout', 'order-details', 'profile', 'wishlist', 'offers', 'contact-us', 'chat', 'shop', 'blog'];
   const showDesktopNav = isDesktop && authenticatedScreens.includes(currentScreen);
 
   // Screens that need scrolling
-  const scrollableScreens = ['case-study', 'home', 'page', 'shop', 'blog', 'contact-us', 'profile', 'wishlist', 'cart', 'product-details'];
+  const scrollableScreens = ['case-study', 'home', 'page', 'shop', 'blog', 'contact-us', 'profile', 'wishlist', 'cart', 'product-details', 'desktop-checkout', 'my-orders'];
   const needsScroll = isDesktop && scrollableScreens.includes(currentScreen);
 
   return (
@@ -140,8 +145,20 @@ function App() {
       {currentScreen === 'cart' && (
         <Cart 
           onBack={() => setCurrentScreen('home')}
-          onCheckout={() => setCurrentScreen('checkout-address')}
+          onCheckout={() => {
+            if (isDesktop) {
+              setCurrentScreen('desktop-checkout');
+            } else {
+              setCurrentScreen('checkout-address');
+            }
+          }}
         />
+      )}
+
+      {currentScreen === 'desktop-checkout' && (
+        <div className="hidden md:block">
+          <DesktopCheckout onConfirmPayment={() => setCurrentScreen('order-details')} />
+        </div>
       )}
 
       {currentScreen === 'checkout-address' && (
@@ -159,11 +176,18 @@ function App() {
       )}
 
       {currentScreen === 'order-details' && (
-        <OrderDetails 
-          onBack={() => setCurrentScreen('home')}
-          onHomeClick={() => setCurrentScreen('home')}
-          onProfileClick={() => setCurrentScreen('profile')}
-        />
+        <>
+          <div className="md:hidden w-full h-full">
+            <OrderDetails 
+              onBack={() => setCurrentScreen('home')}
+              onHomeClick={() => setCurrentScreen('home')}
+              onProfileClick={() => setCurrentScreen('profile')}
+            />
+          </div>
+          <div className="hidden md:block">
+            <DesktopOrderDetails />
+          </div>
+        </>
       )}
 
       {currentScreen === 'profile' && (
@@ -174,6 +198,8 @@ function App() {
           onWishlistClick={() => setCurrentScreen('wishlist')}
           onOfferClick={() => setCurrentScreen('offers')}
           onContactUsClick={() => setCurrentScreen('contact-us')}
+          onMyOrderClick={() => setCurrentScreen('my-orders')}
+          onTrackOrderClick={() => setCurrentScreen('order-details')}
         />
       )}
 
@@ -191,10 +217,26 @@ function App() {
       )}
 
       {currentScreen === 'contact-us' && (
-        <ContactUs 
-          onBack={() => setCurrentScreen('profile')}
-          onChatClick={() => setCurrentScreen('chat')}
-        />
+        <>
+          <div className="md:hidden w-full h-full">
+            <ContactUs 
+              onBack={() => setCurrentScreen('profile')}
+              onChatClick={() => setCurrentScreen('chat')}
+            />
+          </div>
+          <div className="hidden md:block">
+            <DesktopContactUs />
+          </div>
+        </>
+      )}
+
+      {currentScreen === 'my-orders' && (
+        <div className="md:hidden w-full h-full">
+          <MyOrders 
+            onBack={() => setCurrentScreen('profile')}
+            onChatClick={() => setCurrentScreen('chat')}
+          />
+        </div>
       )}
 
       {currentScreen === 'chat' && (
@@ -207,6 +249,17 @@ function App() {
         <CaseStudy 
           onBack={() => setCurrentScreen('profile')}
         />
+      )}
+      {currentScreen === 'blog' && (
+        <>
+          {/* Assuming mobile blog component exists, otherwise placeholder */}
+          <div className="md:hidden w-full h-full flex items-center justify-center">
+            <h1 className="text-white text-2xl font-serif">Blog - Mobile Coming Soon</h1>
+          </div>
+          <div className="hidden md:block">
+            <DesktopBlog />
+          </div>
+        </>
       )}
     </main>
   );

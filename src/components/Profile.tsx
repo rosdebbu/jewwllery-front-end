@@ -9,6 +9,8 @@ interface ProfileProps {
   onWishlistClick: () => void;
   onOfferClick: () => void;
   onContactUsClick: () => void;
+  onMyOrderClick: () => void;
+  onTrackOrderClick: () => void;
 }
 
 const menuItems = [
@@ -21,7 +23,7 @@ const menuItems = [
   { id: 7, label: 'Contact us', icon: Phone },
 ];
 
-const Profile: React.FC<ProfileProps> = ({ onBack, onHomeClick, onLogout, onWishlistClick, onOfferClick, onContactUsClick }) => {
+const Profile: React.FC<ProfileProps> = ({ onBack, onHomeClick, onLogout, onWishlistClick, onOfferClick, onContactUsClick, onMyOrderClick, onTrackOrderClick }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const elementsRef = useRef<HTMLDivElement[]>([]);
 
@@ -98,6 +100,8 @@ const Profile: React.FC<ProfileProps> = ({ onBack, onHomeClick, onLogout, onWish
                   if (item.label === 'Home') onHomeClick();
                   if (item.label === 'Whilslist') onWishlistClick();
                   if (item.label === 'Offer') onOfferClick();
+                  if (item.label === 'My Order') onMyOrderClick();
+                  if (item.label === 'Track my order') onTrackOrderClick();
                   if (item.label === 'Contact us') onContactUsClick();
                 }}
                 className="flex items-center gap-6 cursor-pointer group"

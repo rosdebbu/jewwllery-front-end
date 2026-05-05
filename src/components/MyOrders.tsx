@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { ChevronLeft, MessageSquare } from 'lucide-react';
 import gsap from 'gsap';
 
-interface ContactUsProps {
+interface MyOrdersProps {
   onBack: () => void;
   onChatClick?: () => void;
 }
@@ -44,7 +44,7 @@ const OrderCard = ({ item, addToRefs }: { item: any, addToRefs: any }) => (
   </div>
 );
 
-const ContactUs: React.FC<ContactUsProps> = ({ onBack, onChatClick }) => {
+const MyOrders: React.FC<MyOrdersProps> = ({ onBack, onChatClick }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const elementsRef = useRef<HTMLDivElement[]>([]);
 
@@ -92,7 +92,7 @@ const ContactUs: React.FC<ContactUsProps> = ({ onBack, onChatClick }) => {
           >
             <ChevronLeft size={28} strokeWidth={1.5} />
           </button>
-          <h1 className="font-serif text-3xl font-medium tracking-wide">Contact us</h1>
+          <h1 className="font-serif text-3xl font-medium tracking-wide">My Orders</h1>
         </div>
 
         {/* Recent Ordered */}
@@ -124,4 +124,4 @@ const ContactUs: React.FC<ContactUsProps> = ({ onBack, onChatClick }) => {
   );
 };
 
-export default ContactUs;
+export default MyOrders;

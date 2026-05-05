@@ -1,11 +1,59 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import gsap from 'gsap';
 
 interface DesktopShopProps {
   onProductClick?: (product: any) => void;
 }
 
+const ALL_PRODUCTS = [
+  { name: 'Gold Necklace', price: 'Price 50,000', img: '/assets/necklace.png', rating: 4 },
+  { name: 'Diamond Ring', price: 'Price 1,20,000', img: '/assets/ring.png', rating: 5 },
+  { name: 'Emerald Drop Earrings', price: 'Price 35,000', img: '/assets/earrings.png', rating: 4 },
+  { name: 'Sapphire Pendant', price: 'Price 75,000', img: '/assets/model-bg-2.png', rating: 5 },
+  { name: 'Platinum Bracelet', price: 'Price 95,000', img: '/assets/model-bg-3.png', rating: 4 },
+  { name: 'Ruby Choker', price: 'Price 1,50,000', img: '/assets/necklace.png', rating: 5 },
+  { name: 'Rose Gold Band', price: 'Price 25,000', img: '/assets/ring.png', rating: 4 },
+  { name: 'Pearl Studs', price: 'Price 15,000', img: '/assets/earrings.png', rating: 3 },
+  { name: 'Kundan Set', price: 'Price 2,50,000', img: '/assets/model-bg.png', rating: 5 },
+
+  { name: 'Amethyst Ring', price: 'Price 45,000', img: '/assets/ring.png', rating: 4 },
+  { name: 'Silver Anklet', price: 'Price 5,000', img: '/assets/model-bg-2.png', rating: 3 },
+  { name: 'Diamond Tennis Bracelet', price: 'Price 3,00,000', img: '/assets/model-bg-3.png', rating: 5 },
+  { name: 'Topaz Earrings', price: 'Price 28,000', img: '/assets/earrings.png', rating: 4 },
+  { name: 'Vintage Locket', price: 'Price 65,000', img: '/assets/necklace.png', rating: 4 },
+  { name: 'Opal Ring', price: 'Price 55,000', img: '/assets/ring.png', rating: 5 },
+  { name: 'Bridal Maang Tikka', price: 'Price 40,000', img: '/assets/model-bg.png', rating: 4 },
+  { name: 'Temple Jewellery Set', price: 'Price 1,80,000', img: '/assets/model-bg-2.png', rating: 5 },
+  { name: 'Garnet Drop Earrings', price: 'Price 32,000', img: '/assets/earrings.png', rating: 4 },
+
+  { name: 'Solitaire Diamond', price: 'Price 5,00,000', img: '/assets/ring.png', rating: 5 },
+  { name: 'Jhumka Earrings', price: 'Price 85,000', img: '/assets/earrings.png', rating: 4 },
+  { name: 'Mangalsutra', price: 'Price 1,10,000', img: '/assets/necklace.png', rating: 5 },
+  { name: 'Navratna Ring', price: 'Price 70,000', img: '/assets/ring.png', rating: 4 },
+  { name: 'Polki Necklace', price: 'Price 4,50,000', img: '/assets/model-bg-3.png', rating: 5 },
+  { name: 'Filigree Bracelet', price: 'Price 50,000', img: '/assets/model-bg.png', rating: 4 },
+  { name: 'Aquamarine Pendant', price: 'Price 48,000', img: '/assets/necklace.png', rating: 4 },
+  { name: 'Peridot Studs', price: 'Price 22,000', img: '/assets/earrings.png', rating: 3 },
+  { name: 'Chandbali Earrings', price: 'Price 95,000', img: '/assets/model-bg-2.png', rating: 5 },
+
+  { name: 'Mens Platinum Chain', price: 'Price 1,30,000', img: '/assets/necklace.png', rating: 4 },
+  { name: 'White Gold Ring', price: 'Price 80,000', img: '/assets/ring.png', rating: 4 },
+  { name: 'Tanzanite Drop Earrings', price: 'Price 1,20,000', img: '/assets/earrings.png', rating: 5 },
+  { name: 'Gold Bangle Set', price: 'Price 2,00,000', img: '/assets/model-bg-3.png', rating: 5 },
+  { name: 'Ruby Cufflinks', price: 'Price 45,000', img: '/assets/ring.png', rating: 4 },
+  { name: 'Emerald Choker', price: 'Price 3,50,000', img: '/assets/necklace.png', rating: 5 },
+  { name: 'Hoop Earrings', price: 'Price 18,000', img: '/assets/earrings.png', rating: 4 },
+  { name: 'Diamond Nose Pin', price: 'Price 12,000', img: '/assets/model-bg.png', rating: 4 },
+  { name: 'Statement Cuff', price: 'Price 65,000', img: '/assets/model-bg-2.png', rating: 4 },
+];
+
 const DesktopShop: React.FC<DesktopShopProps> = ({ onProductClick }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+  const totalPages = Math.ceil(ALL_PRODUCTS.length / itemsPerPage);
+  
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const displayedProducts = ALL_PRODUCTS.slice(startIndex, startIndex + itemsPerPage);
   useEffect(() => {
     // Entrance animation
     gsap.fromTo(
@@ -140,7 +188,9 @@ const DesktopShop: React.FC<DesktopShopProps> = ({ onProductClick }) => {
             
             {/* Top Bar */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-              <span className="font-serif text-[#E6D0AC]/60 text-lg">Showing 1-12 of 19 results</span>
+              <span className="font-serif text-[#E6D0AC]/60 text-lg">
+                Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, ALL_PRODUCTS.length)} of {ALL_PRODUCTS.length} results
+              </span>
               <div className="flex items-center gap-3">
                 <button className="p-2 border border-[#E6D0AC]/20 text-[#E6D0AC] hover:bg-[#E6D0AC]/5 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
@@ -159,17 +209,7 @@ const DesktopShop: React.FC<DesktopShopProps> = ({ onProductClick }) => {
 
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                { name: 'Gold Necklace', price: 'Price 50,000', img: '/assets/necklace.png', rating: 4 },
-                { name: 'Necklace', price: 'Price 50,000', img: '/assets/necklace.png', rating: 4 },
-                { name: 'Diamond set', price: 'Price 50,000', img: '/assets/model-bg-2.png', rating: 3 },
-                { name: 'Ring', price: 'Price 50,000', img: '/assets/model-bg-3.png', rating: 4 },
-                { name: 'Jewellery', price: 'Price 50,000', img: '/assets/necklace.png', rating: 4 },
-                { name: 'Earrings', price: 'Price 50,000', img: '/assets/earrings.png', rating: 4 },
-                { name: 'Gold Necklace', price: 'Price 50,000', img: '/assets/model-bg.png', rating: 4 },
-                { name: 'Bracelet', price: 'Price 50,000', img: '/assets/model-bg-2.png', rating: 4 },
-                { name: 'Ring', price: 'Price 50,000', img: '/assets/model-bg-3.png', rating: 4 },
-              ].map((product, idx) => (
+              {displayedProducts.map((product, idx) => (
                 <div key={idx} className="flex flex-col group cursor-pointer" onClick={() => onProductClick?.(product)}>
                   <div className="w-full aspect-square overflow-hidden mb-4 bg-[#111] border border-[#E6D0AC]/10">
                     <img src={product.img} alt={product.name} className="w-full h-full object-cover grayscale-[20%] group-hover:scale-105 group-hover:grayscale-0 transition-all duration-500" />
@@ -194,11 +234,39 @@ const DesktopShop: React.FC<DesktopShopProps> = ({ onProductClick }) => {
 
             {/* Pagination */}
             <div className="flex justify-center items-center gap-2 mt-16 border-t border-[#E6D0AC]/10 pt-10">
-              <button className="w-10 h-10 flex items-center justify-center font-serif text-lg bg-[#EAD6B5] text-[#0A0A0A]">1</button>
-              <button className="w-10 h-10 flex items-center justify-center font-serif text-lg border border-[#E6D0AC]/20 text-[#E6D0AC] hover:bg-[#E6D0AC]/10">2</button>
-              <button className="w-10 h-10 flex items-center justify-center font-serif text-lg border border-[#E6D0AC]/20 text-[#E6D0AC] hover:bg-[#E6D0AC]/10">3</button>
-              <button className="w-10 h-10 flex items-center justify-center font-serif text-lg border border-[#E6D0AC]/20 text-[#E6D0AC] hover:bg-[#E6D0AC]/10">4</button>
-              <button className="w-10 h-10 flex items-center justify-center font-serif text-lg border border-[#E6D0AC]/20 text-[#E6D0AC] hover:bg-[#E6D0AC]/10">
+              {[...Array(totalPages)].map((_, idx) => {
+                const pageNum = idx + 1;
+                return (
+                  <button 
+                    key={pageNum}
+                    onClick={() => {
+                      setCurrentPage(pageNum);
+                      window.scrollTo({ top: 500, behavior: 'smooth' });
+                    }}
+                    className={`w-10 h-10 flex items-center justify-center font-serif text-lg transition-colors ${
+                      currentPage === pageNum 
+                        ? 'bg-[#EAD6B5] text-[#0A0A0A]' 
+                        : 'border border-[#E6D0AC]/20 text-[#E6D0AC] hover:bg-[#E6D0AC]/10'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                )
+              })}
+              <button 
+                onClick={() => {
+                  if(currentPage < totalPages) {
+                    setCurrentPage(prev => prev + 1);
+                    window.scrollTo({ top: 500, behavior: 'smooth' });
+                  }
+                }}
+                disabled={currentPage === totalPages}
+                className={`w-10 h-10 flex items-center justify-center font-serif text-lg border border-[#E6D0AC]/20 transition-colors ${
+                  currentPage === totalPages 
+                    ? 'text-[#E6D0AC]/30 cursor-not-allowed'
+                    : 'text-[#E6D0AC] hover:bg-[#E6D0AC]/10 cursor-pointer'
+                }`}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
               </button>
             </div>

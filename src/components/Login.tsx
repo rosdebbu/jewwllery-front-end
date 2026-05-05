@@ -38,7 +38,11 @@ const Login: React.FC<LoginProps> = ({ onSignupClick, onLogin }) => {
       
       onLogin(); // Navigate to Home
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed');
+      if (!err.response) {
+        setError('Unable to connect to the server. Is the backend running?');
+      } else {
+        setError(err.response?.data?.error || 'Login failed');
+      }
     } finally {
       setLoading(false);
     }
@@ -56,7 +60,11 @@ const Login: React.FC<LoginProps> = ({ onSignupClick, onLogin }) => {
         localStorage.setItem('user', JSON.stringify(response.data.user));
         onLogin();
       } catch (err: any) {
-        setError(err.response?.data?.error || 'Google Login failed');
+        if (!err.response) {
+          setError('Unable to connect to the server. Is the backend running?');
+        } else {
+          setError(err.response?.data?.error || 'Google Login failed');
+        }
       } finally {
         setLoading(false);
       }
