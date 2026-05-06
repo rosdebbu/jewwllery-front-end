@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Heart, ShoppingBag, User, Menu, X } from 'lucide-react';
+import { Heart, ShoppingBag, User } from 'lucide-react';
 import gsap from 'gsap';
 
 interface DesktopNavProps {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Splash from './components/Splash';
 import Onboarding from './components/Onboarding';
 import Login from './components/Login';
@@ -127,9 +127,7 @@ function App() {
             <ProductDetails 
               product={selectedProduct} 
               onBack={() => setCurrentScreen('shop')} 
-              onAddToCart={(product, quantity, priceDetails) => {
-                console.log('Added to cart:', product.name, quantity, priceDetails);
-              }}
+              onCartClick={() => setCurrentScreen('cart')}
             />
           </div>
           <div className="hidden md:block">

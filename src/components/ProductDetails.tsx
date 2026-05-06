@@ -15,11 +15,12 @@ interface Product {
 interface ProductDetailsProps {
   product: Product;
   onBack: () => void;
+  onCartClick: () => void;
 }
 
 const sizes = ['4.0', '4.5', '5.0', '5.5', '6.0'];
 
-const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onBack }) => {
+const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onBack, onCartClick }) => {
   const [selectedSize, setSelectedSize] = useState(sizes[0]);
   const [quantity, setQuantity] = useState(1);
   const containerRef = useRef<HTMLDivElement>(null);

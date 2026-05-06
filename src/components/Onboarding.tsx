@@ -41,7 +41,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onNext }) => {
     gsap.set(contentRef.current, { opacity: 0, y: 20 });
     
     // Set all images to scale 1.1 and opacity 0 initially except the first one which we will animate in
-    imageRefs.current.forEach((el, index) => {
+    imageRefs.current.forEach((el) => {
       if (el) {
         gsap.set(el, { scale: 1.1, opacity: 0 });
       }
@@ -116,7 +116,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onNext }) => {
       {slides.map((slide, index) => (
         <div 
           key={slide.id}
-          ref={el => imageRefs.current[index] = el}
+          ref={(el) => { imageRefs.current[index] = el; }}
           className="absolute inset-0 w-full h-full bg-cover bg-center"
           style={{ backgroundImage: `url(${slide.image})`, zIndex: index }}
         />

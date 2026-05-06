@@ -7,10 +7,10 @@ interface DesktopProductDetailsProps {
   onContinue?: () => void;
 }
 
-const DesktopProductDetails: React.FC<DesktopProductDetailsProps> = ({ product, onBack, onContinue }) => {
+const DesktopProductDetails: React.FC<DesktopProductDetailsProps> = ({ product, onContinue }) => {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'description' | 'additional'>('description');
-  const [showNotification, setShowNotification] = useState(true);
+  const [showNotification] = useState(true);
 
   useEffect(() => {
     // Entrance animation

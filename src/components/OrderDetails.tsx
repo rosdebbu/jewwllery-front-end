@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { ChevronLeft, Layout, CheckSquare, Package, Truck, User, Home as HomeIcon, ShoppingBag, MessageSquare, HelpCircle, CheckCircle2, Circle } from 'lucide-react';
+import { ChevronLeft, Layout, CheckSquare, Package, Truck, User, Home as HomeIcon, ShoppingBag, MessageSquare, HelpCircle, CheckCircle2 } from 'lucide-react';
 import gsap from 'gsap';
 
 interface OrderDetailsProps {
@@ -83,7 +83,7 @@ const OrderDetails: React.FC<OrderDetailsProps> = ({ onBack, onHomeClick, onProf
         {/* Order Items Card */}
         <div ref={addToRefs} className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 backdrop-blur-md mb-10 shadow-lg">
           <div className="flex flex-col gap-5">
-            {orderItems.map((item, index) => (
+            {orderItems.map((item) => (
               <div key={item.id} className="flex gap-4 items-center relative">
                 <div className="w-16 h-16 rounded-[14px] overflow-hidden bg-black flex-shrink-0 border border-white/10">
                   <img src={item.image} alt={item.name} className="w-full h-full object-cover opacity-90" />
